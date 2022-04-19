@@ -1,82 +1,97 @@
 <script setup lang="ts">
-import { useStore } from "@/store";
-import { gameConfig } from "@/constants";
-import { vTouch, Direction } from "@/directive";
+import { useStore } from '@/store'
+import { gameConfig } from '@/constants'
+import { vTouch, Direction } from '@/directive'
 
-const { currentLevelIndex, setIsShowLevel } = $(useStore());
+const { currentLevelIndex, setIsShowLevel } = $(useStore())
 
-const { layout: genLayout, name: gameName } = gameConfig[currentLevelIndex];
+const { layout: genLayout, name: gameName } = gameConfig[currentLevelIndex]
 
-let layout = $ref(genLayout());
-let step = $ref(0);
+let layout = $ref(genLayout())
+let step = $ref(0)
 
 function backLevel() {
-  setIsShowLevel(true);
+  setIsShowLevel(true)
 }
 function rest() {
-  layout = genLayout();
-  step = 0;
+  layout = genLayout()
+  step = 0
 }
 
 function genPx(num: number) {
-  return num + "px";
+  return num + 'px'
 }
 
 function handle(dir: Direction, index: number) {
-  const { top, left, width, height } = layout[index];
-  let newTop = top;
-  let newLeft = left;
+  const { top, left, width, height, name } = layout[index]
+  let newTop = top
+  let newLeft = left
   switch (dir) {
     case Direction.UP:
-      newTop = top - 60;
-      break;
+      newTop = top - 60
+      break
     case Direction.DOWN:
-      newTop = top + 60;
-      break;
+      newTop = top + 60
+      break
     case Direction.LEFT:
-      newLeft = left - 60;
-      break;
+      newLeft = left - 60
+      break
     case Direction.RIGHT:
-      newLeft = left + 60;
-      break;
+      newLeft = left + 60
+      break
 
     default:
-      break;
+      break
   }
   if (newTop < 0 || newTop >= 300 || newLeft < 0 || newLeft >= 240) {
-    return;
+    return
   }
 
   if (
-    layout.some(({ top: t, left: l, width: w, height: h }) => {
+    layout.some(({ top: t, left: l, width: w, height: h }, i) => {
+      if (i === index) {
+        return false
+      }
       switch (dir) {
         case Direction.UP:
           return (
-            newLeft >= l && newLeft + w <= l + w && newTop < t && newTop < t + h
-          );
+            top === t + h &&
+            newTop < t + h &&
+            ((newLeft >= l && newLeft + width <= l + w) ||
+              (newLeft < l + w && newLeft + width > l))
+          )
         case Direction.DOWN:
           return (
-            newLeft >= l && newLeft + w <= l + w && newTop > t && newTop + h > t
-          );
+            top + height === t &&
+            newTop + height > t &&
+            ((newLeft >= l && newLeft + width <= l + w) ||
+              (newLeft < l + w && newLeft + width > l))
+          )
         case Direction.LEFT:
           return (
-            newTop >= t && newTop + h <= t + h && newLeft < l && newLeft < l + w
-          );
+            left === l + w &&
+            newLeft < l + w &&
+            ((newTop >= t && newTop + height <= t + h) ||
+              (newTop < t + h && newTop + height > t))
+          )
         case Direction.RIGHT:
           return (
-            newTop >= t && newTop + h <= t + h && newLeft > l && newLeft + w > l
-          );
+            left + width === l &&
+            newLeft + width > l &&
+            ((newTop >= t && newTop + height <= t + h) ||
+              (newTop < t + h && newTop + height > t))
+          )
 
         default:
-          return false;
+          return false
       }
     })
   ) {
-    return;
+    return
   }
-  console.log(1);
 
-  layout[index] = { ...layout[index], top: newTop, left: newLeft };
+  layout[index] = { ...layout[index], top: newTop, left: newLeft }
+  step++
 }
 </script>
 
@@ -88,13 +103,13 @@ function handle(dir: Direction, index: number) {
         v-for="(
           { name, top, left, width, height, backgroundColor }, index
         ) in layout"
-        class="flex justify-center items-center font-20px absolute rounded-md box-border border-2px border-#9abeaf"
+        class="flex justify-center items-center font-20px absolute rounded-md box-border border-2px border-#9abeaf transition-all"
         :style="{
           top: genPx(top),
           left: genPx(left),
           width: genPx(width),
           height: genPx(height),
-          backgroundColor,
+          backgroundColor
         }"
         v-touch="(dir: Direction)=>handle(dir,index)"
       >
