@@ -13,7 +13,7 @@ function setLevel(index: number) {
 <template>
   <div class="flex flex-wrap">
     <div
-      class="cursor-pointer underline mr-2 text-#5d655f"
+      class="cursor-pointer underline mr-6 mb-3 text-#5d655f text-18px"
       v-for="({ name }, index) in gameConfig"
       :key="name"
       @click="setLevel(index)"
