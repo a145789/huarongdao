@@ -9,6 +9,7 @@ const { layout: genLayout, name: gameName } = gameConfig[currentLevelIndex];
 
 let layout = $ref(genLayout());
 let step = $ref(0);
+let visible = $ref(false);
 
 function backLevel() {
   setIsShowLevel(true);
@@ -16,6 +17,16 @@ function backLevel() {
 function rest() {
   layout = genLayout();
   step = 0;
+}
+
+function modalHandle(type: "rest" | "backLevel") {
+  if (type === "rest") {
+    rest();
+  } else {
+    backLevel();
+  }
+
+  visible = false;
 }
 
 function genPx(num: number) {
@@ -98,7 +109,7 @@ function handle(dir: Direction, index: number) {
   layout[index] = { ...layout[index], top: newTop, left: newLeft };
   step++;
   if (name === "曹操" && newTop === 180 && newLeft === 60) {
-    alert("恭喜你，通关了！");
+    visible = true;
   }
 }
 </script>
@@ -134,5 +145,42 @@ function handle(dir: Direction, index: number) {
       <div class="cursor-pointer underline" @click="rest">重置</div>
       <div class="cursor-pointer underline" @click="backLevel">返回关卡</div>
     </div>
+
+    <!-- Modal -->
+    <Teleport to="body">
+      <Transition name="fade" mode="out-in">
+        <div class="fixed inset-0 z-50 overflow-hidden" v-show="visible">
+          <div class="absolute inset-0 bg-gray-600 opacity-75" />
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div
+              class="bg-#9abeaf dark:bg-#141e1b rounded-lg shadow-xl px-6 py-6 overflow-hidden"
+            >
+              <h3 class="text-#549b70 dark:text-#d1d5db text-center">
+                恭喜你，通关{{ gameName }}！
+              </h3>
+              <div
+                class="text-#229453 dark:text-#d1d5db mt-10 text-center font-bold"
+              >
+                仅用了 {{ step }} 步，太厉害了。
+              </div>
+              <div class="mt-12 flex justify-around">
+                <div
+                  class="cursor-pointer underline dark:text-#eee"
+                  @click="modalHandle('rest')"
+                >
+                  重置
+                </div>
+                <div
+                  class="cursor-pointer underline dark:text-#eee"
+                  @click="modalHandle('backLevel')"
+                >
+                  返回关卡
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
