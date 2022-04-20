@@ -1,58 +1,58 @@
 <script setup lang="ts">
-import { useStore } from "@/store";
-import { gameConfig } from "@/constants";
-import { vTouch, Direction } from "@/directive";
+import { useStore } from '@/store'
+import { gameConfig } from '@/constants'
+import { vTouch, Direction } from '@/directive'
 
-const { currentLevelIndex, setIsShowLevel } = $(useStore());
+const { currentLevelIndex, setIsShowLevel } = $(useStore())
 
-const { layout: genLayout, name: gameName } = gameConfig[currentLevelIndex];
+const { layout: genLayout, name: gameName } = gameConfig[currentLevelIndex]
 
-let layout = $ref(genLayout());
-let step = $ref(0);
-let visible = $ref(false);
+let layout = $ref(genLayout())
+let step = $ref(0)
+let visible = $ref(false)
 
 function backLevel() {
-  setIsShowLevel(true);
+  setIsShowLevel(true)
 }
 function rest() {
-  layout = genLayout();
-  step = 0;
+  layout = genLayout()
+  step = 0
 }
 
-function modalHandle(type: "rest" | "backLevel") {
-  if (type === "rest") {
-    rest();
+function modalHandle(type: 'rest' | 'backLevel') {
+  if (type === 'rest') {
+    rest()
   } else {
-    backLevel();
+    backLevel()
   }
 
-  visible = false;
+  visible = false
 }
 
 function genPx(num: number) {
-  return num + "px";
+  return num + 'px'
 }
 
 function handle(dir: Direction, index: number) {
-  const { top, left, width, height, name } = layout[index];
-  let newTop = top;
-  let newLeft = left;
+  const { top, left, width, height, name } = layout[index]
+  let newTop = top
+  let newLeft = left
   switch (dir) {
     case Direction.UP:
-      newTop = top - 60;
-      break;
+      newTop = top - 60
+      break
     case Direction.DOWN:
-      newTop = top + 60;
-      break;
+      newTop = top + 60
+      break
     case Direction.LEFT:
-      newLeft = left - 60;
-      break;
+      newLeft = left - 60
+      break
     case Direction.RIGHT:
-      newLeft = left + 60;
-      break;
+      newLeft = left + 60
+      break
 
     default:
-      break;
+      break
   }
   if (
     newTop < 0 ||
@@ -60,13 +60,13 @@ function handle(dir: Direction, index: number) {
     newLeft < 0 ||
     newLeft + width > 240
   ) {
-    return;
+    return
   }
 
   if (
     layout.some(({ top: t, left: l, width: w, height: h }, i) => {
       if (i === index) {
-        return false;
+        return false
       }
       switch (dir) {
         case Direction.UP:
@@ -75,41 +75,41 @@ function handle(dir: Direction, index: number) {
             newTop < t + h &&
             ((newLeft >= l && newLeft + width <= l + w) ||
               (newLeft < l + w && newLeft + width > l))
-          );
+          )
         case Direction.DOWN:
           return (
             top + height === t &&
             newTop + height > t &&
             ((newLeft >= l && newLeft + width <= l + w) ||
               (newLeft < l + w && newLeft + width > l))
-          );
+          )
         case Direction.LEFT:
           return (
             left === l + w &&
             newLeft < l + w &&
             ((newTop >= t && newTop + height <= t + h) ||
               (newTop < t + h && newTop + height > t))
-          );
+          )
         case Direction.RIGHT:
           return (
             left + width === l &&
             newLeft + width > l &&
             ((newTop >= t && newTop + height <= t + h) ||
               (newTop < t + h && newTop + height > t))
-          );
+          )
 
         default:
-          return false;
+          return false
       }
     })
   ) {
-    return;
+    return
   }
 
-  layout[index] = { ...layout[index], top: newTop, left: newLeft };
-  step++;
-  if (name === "曹操" && newTop === 180 && newLeft === 60) {
-    visible = true;
+  layout[index] = { ...layout[index], top: newTop, left: newLeft }
+  step++
+  if (name === '曹操' && newTop === 180 && newLeft === 60) {
+    visible = true
   }
 }
 </script>
@@ -130,9 +130,9 @@ function handle(dir: Direction, index: number) {
           left: genPx(left),
           width: genPx(width),
           height: genPx(height),
-          backgroundColor,
+          backgroundColor
         }"
-        v-touch="(dir: Direction)=>handle(dir,index)"
+        v-touch="(dir: Direction) => handle(dir, index)"
       >
         {{ name }}
       </div>
@@ -149,9 +149,12 @@ function handle(dir: Direction, index: number) {
     <!-- Modal -->
     <Teleport to="body">
       <Transition name="fade" mode="out-in">
-        <div class="fixed inset-0 z-50 overflow-hidden" v-show="visible">
-          <div class="absolute inset-0 bg-gray-600 opacity-75" />
-          <div class="absolute inset-0 flex items-center justify-center">
+        <div
+          class="fixed h-full w-full top-0 z-50 overflow-hidden"
+          v-show="visible"
+        >
+          <div class="absolute h-full w-full bg-gray-600 opacity-75" />
+          <div class="absolute h-full w-full flex items-center justify-center">
             <div
               class="bg-#9abeaf dark:bg-#141e1b rounded-lg shadow-xl px-6 py-6 overflow-hidden"
             >
@@ -159,9 +162,14 @@ function handle(dir: Direction, index: number) {
                 恭喜你，通关{{ gameName }}！
               </h3>
               <div
-                class="text-#229453 dark:text-#d1d5db mt-10 text-center font-bold"
+                class="text-#229453 dark:text-#d1d5db mt-8 text-center font-bold"
               >
                 仅用了 {{ step }} 步，太厉害了。
+              </div>
+              <div
+                class="text-#229453 dark:text-#d1d5db mt-4 text-center w-200px"
+              >
+              Give 朱浩: hope you happy everyday !!!
               </div>
               <div class="mt-12 flex justify-around">
                 <div
