@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStore } from '@/store'
 import { gameConfig } from '@/constants'
-import { vTouch, Direction } from '@/directive'
+import vTouchdir, { Direction } from 'vtouchdir'
 
 const { currentLevelIndex, setIsShowLevel } = $(useStore())
 
@@ -132,7 +132,7 @@ function handle(dir: Direction, index: number) {
           height: genPx(height),
           backgroundColor
         }"
-        v-touch="(dir: Direction) => handle(dir, index)"
+        v-touchdir.prevent="(dir: Direction) => handle(dir, index)"
       >
         {{ name }}
       </div>
@@ -169,7 +169,7 @@ function handle(dir: Direction, index: number) {
               <div
                 class="text-#229453 dark:text-#d1d5db mt-4 text-center w-200px"
               >
-              Give 朱浩: hope you happy everyday !!!
+                Give 朱浩: hope you happy everyday !!!
               </div>
               <div class="mt-12 flex justify-around">
                 <div
