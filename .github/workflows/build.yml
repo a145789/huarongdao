@@ -30,6 +30,11 @@ jobs:
         run: nci
 
       - name: Build
-        run: nr deploy
-        env:
-          GITHUB_TOKEN: ${{secrets.GIT_TOKEN}}
+        run: nr build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        with:
+          branch: gh-pages
+          folder: dist
+          ssh-key: ${{secrets.GIT_TOKEN}}
