@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import Game from "./components/Game.vue";
-import Level from "./components/Level.vue";
-import WeatherSunny16Regular from "@vicons/fluent/WeatherSunny16Regular";
-import WeatherMoon28Filled from "@vicons/fluent/WeatherMoon28Filled";
-import { Icon } from "@vicons/utils";
+import Game from './components/Game.vue'
+import Level from './components/Level.vue'
+import WeatherSunny16Regular from '@vicons/fluent/WeatherSunny16Regular'
+import WeatherMoon28Filled from '@vicons/fluent/WeatherMoon28Filled'
+import { Icon } from '@vicons/utils'
 
-import { useStore } from "@/store";
-import { watchEffect } from "vue";
+import { useStore } from '@/store'
+import { watchEffect } from 'vue'
 
-const { isShowLevel } = $(useStore());
-let isDark = $ref(Boolean(localStorage.getItem("huarongdao_dark")));
+const { isShowLevel } = $(useStore())
+let isDark = $ref(Boolean(localStorage.getItem('huarongdao_dark')))
 watchEffect(() => {
-  document.body.classList.toggle("dark", isDark);
-  localStorage.setItem("huarongdao_dark", isDark ? "true" : "");
-});
+  document.body.classList.toggle('dark', isDark)
+  localStorage.setItem('huarongdao_dark', isDark ? 'true' : '')
+})
 </script>
 
 <template>
