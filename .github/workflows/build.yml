@@ -11,7 +11,7 @@ on:
 
 jobs:
   deploy:
-    if: "!contains(github.event.head_commit.message, 'skip ci', 'dependabot')"
+    if: "!contains(github.event.head_commit.message, 'skip ci') && !contains(github.event.head_commit.message, 'dependabot')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
