@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { useStore } from '@/store'
-import { gameConfig } from '@/constants'
-import vTouchdir, { Direction } from 'vtouchdir'
+import { useStore } from "@/store"
+import { gameConfig } from "@/constants"
+import vTouchdir, { Direction } from "vtouchdir"
 
 const { currentLevelIndex, setIsShowLevel } = $(useStore())
 
 const { layout: genLayout, name: gameName } = gameConfig[currentLevelIndex]
 
-let layout = $ref(genLayout())
+let realLayout = $ref(genLayout())
 let step = $ref(0)
 let visible = $ref(false)
 
@@ -15,12 +15,12 @@ function backLevel() {
   setIsShowLevel(true)
 }
 function rest() {
-  layout = genLayout()
+  realLayout = genLayout()
   step = 0
 }
 
-function modalHandle(type: 'rest' | 'backLevel') {
-  if (type === 'rest') {
+function modalHandle(type: "rest" | "backLevel") {
+  if (type === "rest") {
     rest()
   } else {
     backLevel()
@@ -30,10 +30,14 @@ function modalHandle(type: 'rest' | 'backLevel') {
 }
 
 function genPx(num: number) {
-  return num + 'px'
+  return num + "px"
 }
 
-function handle(dir: Direction, index: number) {
+function judgeIsWin(
+  dir: Direction,
+  index: number,
+  layout: ReturnType<typeof genLayout>
+) {
   const { top, left, width, height, name } = layout[index]
   let newTop = top
   let newLeft = left
@@ -106,10 +110,61 @@ function handle(dir: Direction, index: number) {
     return
   }
 
-  layout[index] = { ...layout[index], top: newTop, left: newLeft }
-  step++
-  if (name === '曹操' && newTop === 180 && newLeft === 60) {
-    visible = true
+  if (name === "曹操" && newTop === 180 && newLeft === 60) {
+    return {
+      top: newTop,
+      left: newLeft,
+      isWin: true,
+    }
+  } else {
+    return {
+      top: newTop,
+      left: newLeft,
+      isWin: false,
+    }
+  }
+}
+
+function touchHandle(dir: Direction, index: number) {
+  const result = judgeIsWin(dir, index, realLayout)
+  if (result) {
+    const { isWin, top, left } = result
+    realLayout[index] = { ...realLayout[index], top, left }
+    step++
+    if (isWin) {
+      setTimeout(() => {
+        visible = true
+      }, 200)
+    }
+  }
+}
+
+function hook() {}
+
+function test() {
+  let i = 0
+  while (i < 400) {
+    const index = Math.floor(Math.random() * realLayout.length)
+    const result = [
+      judgeIsWin(Direction.UP, index, realLayout),
+      judgeIsWin(Direction.DOWN, index, realLayout),
+      judgeIsWin(Direction.LEFT, index, realLayout),
+      judgeIsWin(Direction.RIGHT, index, realLayout),
+    ].filter((item) => item) as {
+      top: number
+      left: number
+      isWin: boolean
+    }[]
+    if (!result.length) {
+      continue
+    } else {
+      for (const iterator of result) {
+        const { isWin, top, left } = iterator
+        realLayout[index] = { ...realLayout[index], top, left }
+       
+      }
+    }
+    i++
   }
 }
 </script>
@@ -123,16 +178,16 @@ function handle(dir: Direction, index: number) {
       <div
         v-for="(
           { name, top, left, width, height, backgroundColor }, index
-        ) in layout"
+        ) in realLayout"
         class="flex justify-center items-center font-20px absolute rounded-md box-border border-2px border-#9abeaf dark:border-#141e1b transition-all"
         :style="{
           top: genPx(top),
           left: genPx(left),
           width: genPx(width),
           height: genPx(height),
-          backgroundColor
+          backgroundColor,
         }"
-        v-touchdir.prevent="(dir: Direction) => handle(dir, index)"
+        v-touchdir.prevent="(dir: Direction) => touchHandle(dir, index)"
       >
         {{ name }}
       </div>
