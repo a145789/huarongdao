@@ -24,13 +24,13 @@ jobs:
           node-version: 16.x
 
       - name: Setup
-        run: npm i -g @antfu/ni
+        run: npm i -g pnpm
 
       - name: Install
-        run: nci
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build
-        run: nr build
+        run: pnpm build
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.3.3
